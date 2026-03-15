@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>暂未开放 - NeuStr</title>
+  <meta name="description" content="该页面暂未开放，正在建设中...">
+  
+  <!-- 字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --text: #e0e0ff;
+      --text-light: #a0a0cc;
+      --accent: #00d4ff;
+      --accent-dim: #0099bb;
+      --border: #1a1a33;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 简单粒子背景（可选，增强科技感） */
+    #particles {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    main {
+      text-align: center;
+      z-index: 2;
+      max-width: 720px;
+    }
+
+    h1 {
+      font-size: 3.8rem;
+      font-weight: 600;
+      letter-spacing: -1px;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--accent), #7cffd4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.4rem;
+      color: var(--text-light);
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+
+    .status {
+      display: inline-block;
+      background: rgba(0, 212, 255, 0.08);
+      border: 1px solid var(--accent-dim);
+      border-radius: 50px;
+      padding: 0.6rem 1.8rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      animation: pulse 2.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50%      { opacity: 1;   transform: scale(1.04); }
+    }
+
+    .back-home {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.15rem;
+      border: 1px solid var(--accent-dim);
+      border-radius: 8px;
+      padding: 0.8rem 1.8rem;
+      transition: all 0.25s ease;
+    }
+
+    .back-home:hover {
+      background: rgba(0, 212, 255, 0.12);
+      transform: translateY(-2px);
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 2rem 0;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      z-index: 2;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2.8rem; }
+      .subtitle { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 粒子背景 canvas（可选，如果你想要更炫酷，可以保留；否则删掉下面两行） -->
+  <canvas id="particles"></canvas>
+
+  <main>
+    <h1>暂未开放</h1>
+    <div class="subtitle">
+      这个区域正在紧张建设中...<br>
+      预计很快就会和大家见面，敬请期待！
+    </div>
+
+    <div class="status">建设中 · Coming Soon</div>
+
+    <a href="../index.html" class="back-home">← 返回首页</a>
+  </main>
+
+  <footer>
+    <p>© 2026 NeuStr • 小站持续更新中...</p>
+  </footer>
+
+  <!-- 简单粒子效果 JS（可选，如果你不喜欢可以整段删掉） -->
+  <script>
+    const canvas = document.getElementById('particles');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
+      const particles = [];
+      for (let i = 0; i < 60; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1.5 + 0.5,
+          speed: Math.random() * 0.3 + 0.1
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(0, 212, 255, 0.4)';
+          ctx.fill();
+
+          p.y += p.speed;
+          if (p.y > canvas.height) p.y = 0;
+        });
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+  </script>
+
+</body>
+</html>
