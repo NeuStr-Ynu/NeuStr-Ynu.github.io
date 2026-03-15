@@ -1,1 +1,225 @@
-<p>Hello 大家好</p>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>你的名字 - 学习笔记小站</title>
+  <meta name="description" content="记录学习前端、后端、算法、数学、AI等各种笔记">
+  
+  <!-- 简单现代的字体 + 变量 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --text: #e0e0e0;
+      --text-light: #a0a0a0;
+      --accent: #00d4ff;
+      --accent-dim: #0099bb;
+      --card: #161616;
+      --border: #222;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.6;
+      padding: 32px 16px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 500;
+      margin-bottom: 0.8rem;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: var(--text-light);
+      font-size: 1.15rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .social-links a {
+      color: var(--text-light);
+      text-decoration: none;
+      margin: 0 12px;
+      font-size: 1.1rem;
+      transition: color 0.2s;
+    }
+
+    .social-links a:hover {
+      color: var(--accent);
+    }
+
+    main {
+      display: grid;
+      gap: 2.5rem;
+    }
+
+    section h2 {
+      font-size: 1.6rem;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+      font-weight: 500;
+      border-left: 4px solid var(--accent-dim);
+      padding-left: 12px;
+    }
+
+    .note-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      transition: all 0.18s ease;
+    }
+
+    .card:hover {
+      border-color: var(--accent-dim);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 212, 255, 0.08);
+    }
+
+    .card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.6rem;
+      color: white;
+    }
+
+    .card p {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .card a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .card a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    /* 代码块风格（如果你后续用 markdown 转 html 会比较搭） */
+    pre, code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #0a0a0a;
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+    }
+
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2.2rem; }
+      .note-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>你的名字 / 小站</h1>
+    <div class="subtitle">记录学习 · 整理思路 · 偶尔瞎写</div>
+    
+    <div class="social-links">
+      <a href="https://github.com/你的github用户名" target="_blank">GitHub</a> ·
+      <a href="https://twitter.com/你的id" target="_blank">Twitter/X</a> ·
+      <a href="https://space.bilibili.com/你的id" target="_blank">Bilibili</a> ·
+      <a href="mailto:你的邮箱">Email</a>
+    </div>
+  </header>
+
+  <main>
+
+    <section>
+      <h2>最新 / 置顶笔记</h2>
+      <div class="note-grid">
+        <div class="card">
+          <h3>2026年最新：DeepSeek R1 蒸馏模型使用笔记</h3>
+          <p>本地部署、量化、vLLM推理、与 o1-mini 对比实测</p>
+          <a href="./notes/deepseek-r1-distill.html">→ 阅读全文</a>
+        </div>
+
+        <div class="card">
+          <h3>前端工程化：2025-2026 现代工具链推荐</h3>
+          <p>Vite5 + TypeScript + Tailwind 4 + Biome + oxlint + shadcn/ui</p>
+          <a href="./notes/frontend-toolchain-2026.html">→ 阅读全文</a>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>分类浏览</h2>
+      <div class="note-grid">
+        <div class="card">
+          <h3>前端 / Web</h3>
+          <p>React、Vue、TypeScript、性能优化、浏览器原理...</p>
+          <a href="./categories/frontend.html">查看全部 →</a>
+        </div>
+
+        <div class="card">
+          <h3>大模型 / LLM</h3>
+          <p>微调、量化、RAG、Agent、MoE、推理引擎...</p>
+          <a href="./categories/llm.html">查看全部 →</a>
+        </div>
+
+        <div class="card">
+          <h3>算法 / LeetCode</h3>
+          <p>刷题记录、技巧总结、竞赛复盘</p>
+          <a href="./categories/algorithm.html">查看全部 →</a>
+        </div>
+
+        <div class="card">
+          <h3>杂项 / Others</h3>
+          <p>数学、Rust、Neovim、工具链、随笔</p>
+          <a href="./categories/misc.html">查看全部 →</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 你的名字 • Powered by GitHub Pages & Handwritten HTML</p>
+  </footer>
+
+</body>
+</html>
