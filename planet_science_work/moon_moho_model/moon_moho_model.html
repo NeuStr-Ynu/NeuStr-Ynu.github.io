@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>月球莫霍面模型 - NeuStr</title>
+  <meta name="description" content="月球全域莫霍面深度模型：基于重力反演方法，使用 Uieda et al. (2017) 南美莫霍面反演技术适配月球数据">
+  
+  <!-- 字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --text: #e0e0e0;
+      --text-light: #a0a0a0;
+      --accent: #00d4ff;
+      --accent-dim: #0099bb;
+      --card: #161616;
+      --border: #222;
+      --hover-bg: #1a1a1a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.6;
+      padding: 32px 16px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--accent-dim);
+    }
+
+    h1 {
+      font-size: 3.2rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      letter-spacing: -1px;
+    }
+
+    .tagline {
+      font-size: 1.4rem;
+      color: var(--text-light);
+      margin-bottom: 2rem;
+    }
+
+    .hero-btn {
+      display: inline-block;
+      background: var(--accent-dim);
+      color: white;
+      padding: 0.9rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+      margin: 0.5rem;
+    }
+
+    .hero-btn:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .hero-btn.secondary {
+      background: transparent;
+      border: 1px solid var(--accent-dim);
+      color: var(--accent);
+    }
+
+    .hero-btn.secondary:hover {
+      background: rgba(0, 212, 255, 0.08);
+    }
+
+    section {
+      margin-bottom: 5rem;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+      font-weight: 500;
+      border-left: 4px solid var(--accent-dim);
+      padding-left: 12px;
+    }
+
+    .intro-text, .method-text, .result-text {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* 点击跳转图片样式 */
+    .model-preview {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin: 2rem auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--card);
+      box-shadow: 0 6px 24px rgba(0, 212, 255, 0.08);
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+
+    .model-preview:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(0, 212, 255, 0.12);
+      border-color: var(--accent-dim);
+    }
+
+    .model-preview img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+
+    .model-preview:hover img {
+      transform: scale(1.03);
+    }
+
+    .preview-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7));
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 1.5rem;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    .model-preview:hover .preview-overlay {
+      opacity: 1;
+    }
+
+    .preview-text {
+      color: var(--accent);
+      font-size: 1.3rem;
+      font-weight: 500;
+      text-shadow: 0 2px 8px black;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 6rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2.6rem; }
+      .model-preview { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="../index.html" class="back-link">← 返回首页</a>
+    <h1>月球莫霍面模型</h1>
+    <div class="tagline">全月球莫霍面深度反演模型</div>
+
+    <div>
+      <a href="https://github.com/NeuStr-Ynu/lunar-crust-thickness-inversion-YNU-WZP" target="_blank" class="hero-btn secondary">GitHub 仓库</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- 模型预览图片 + 点击跳转 -->
+    <section>
+      <h2>模型预览（点击查看完整交互版本）</h2>
+      
+      <a href="./moho.html" class="model-preview">
+        <img src="./moho.png" alt="月球莫霍面深度分布预览图">
+        <div class="preview-overlay">
+          <div class="preview-text">点击进入交互查看 →</div>
+        </div>
+      </a>
+
+      <p style="text-align: center; color: var(--text-light); margin-top: 1rem; font-size: 0.95rem;">
+        （图片为静态预览，点击后跳转到完整可交互模型页面）
+      </p>
+    </section>
+
+    <!-- 其他写字区域（保持原样，你可以继续填充） -->
+    <section>
+      <h2>模型概述</h2>
+      <div class="intro-text">
+        <p>
+          本模型采用 
+          <a href="https://github.com/pinga-lab/paper-moho-inversion-tesseroids" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style="color: var(--accent); text-decoration: underline;">
+            Uieda et al. (2017)
+          </a> 
+          提出的球坐标下快速非线性重力反演方法，我们修改了软件中的相关参数，使其能够在月球的环境下稳定运行。
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>空间域反演最优参数与模型正演结果分析</h2>
+      
+      <div class="text-content" style="background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.6rem; line-height: 1.8;">
+        <p>
+          空间域反演的最优参数和模型正演结果如<strong>图 1</strong>所示：
+        </p>
+
+        <ul style="margin: 1rem 0 1rem 2rem; list-style-type: disc;">
+          <li>
+            <strong>(a)</strong> 为正则化参数曲线。该图显示了一个单调递增的曲线，最小值出现在正则化参数为 <strong>1×10<sup>-10</sup></strong> 的位置，得分为 <strong>4.54×10<sup>1</sup></strong>。
+          </li>
+          <li>
+            <strong>(b)</strong> 为参考深度与密度对比的得分情况。反演得到的最优参数为：参考界面位于月球参考球面下方 <strong>40 km</strong>，壳幔密度对比 <strong>Δρ = 700 kg/m³</strong>。
+          </li>
+          <li>
+            <strong>(c)</strong> 展示了最佳反演模型正演与观测的残差直方图。残差直方图显示均值为 <strong>-1.45</strong>，标准差为 <strong>3.67</strong>。残差均值接近 0 且标准差不大，表明反演结果可信。
+          </li>
+          <li>
+            <strong>(d)</strong> 图与 <strong>(e)</strong> 图分别展示了模型正演预测的布格重力异常与观测的布格重力异常。预测与观测的布格重力异常显示出高度一致的结果。
+          </li>
+        </ul>
+
+        <p>
+          综上，基于空间域小单元球面棱柱体正演的月球莫霍面反演，其最佳反演参数应选择：
+        </p>
+
+        <ul style="margin: 0.8rem 0 1.2rem 2rem; list-style-type: none; color: var(--accent);">
+          <li>• 正则化参数 <strong>λ = 10<sup>-10</sup></strong></li>
+          <li>• 密度对比 <strong>Δρ = 700 kg/m³</strong></li>
+          <li>• 参考深度 <strong>h<sub>ref</sub> = -40 km</strong></li>
+        </ul>
+
+        <p>
+          根据模型正演结果，模型对观测重力场的拟合效果较好，模型整体可信。
+        </p>
+      </div>
+
+      <!-- 如果有图，可以在这里插入 -->
+      
+      <div style="text-align: center; margin: 2rem 0;">
+        <img src="./空间域_反演结果_参数与正演.png" alt="图 3.6 空间域反演参数与正演结果" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+        <p style="color: var(--text-light); font-size: 0.95rem; margin-top: 0.8rem;">图 3.6 空间域反演最优参数与模型正演结果</p>
+      </div>
+      
+    </section>
+    <section>
+      <h2>参考文献</h2>
+      <div class="method-text">
+        <p>Uieda, L., & Barbosa, V. C. (2017). Fast nonlinear gravity inversion in spherical coordinates with application to the South American Moho. Geophysical Journal International, 208(1), 162-176.</p>
+        <p>Uieda, L., Barbosa, V. C., & Braitenberg, C. (2016). Tesseroids: Forward-modeling gravitational fields in spherical coordinates. Geophysics, 81(5), F41-F48.</p>
+      </div>
+    </section>
+
+    <!-- 你可以继续加参数、结果讨论等 section -->
+
+  </main>
+
+  <footer>
+    <p>2026 NeuStr • Powered by AIwritten HTML</p>
+  </footer>
+
+</body>
+</html>

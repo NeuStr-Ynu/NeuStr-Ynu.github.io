@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>行星科学相关工作 - NeuStr</title>
+  <meta name="description" content="工作 - 行星科学">
+  
+  <!-- 字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --text: #e0e0e0;
+      --text-light: #a0a0a0;
+      --accent: #00d4ff;
+      --accent-dim: #0099bb;
+      --card: #161616;
+      --border: #222;
+      --hover-bg: #1a1a1a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.6;
+      padding: 32px 16px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 3.5rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 500;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.4px;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      margin: 0.8rem 0;
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--accent-dim);
+      text-decoration: underline;
+    }
+
+    main {
+      display: grid;
+      gap: 2.5rem;
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+      font-weight: 500;
+      border-left: 4px solid var(--accent-dim);
+      padding-left: 12px;
+    }
+
+    /* ── 新增：条目列表样式 ── */
+    .entry-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .entry {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.1rem 1.4rem;
+      transition: all 0.16s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .entry:hover {
+      background: var(--hover-bg);
+      border-color: var(--accent-dim);
+      transform: translateX(4px);
+    }
+
+    .entry-title {
+      font-size: 1.22rem;
+      color: white;
+      margin-bottom: 0.35rem;
+      font-weight: 500;
+    }
+
+    .entry-desc {
+      color: var(--text-light);
+      font-size: 0.94rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .entry-link {
+      color: var(--accent);
+      font-weight: 500;
+      font-size: 0.94rem;
+      text-decoration: none;
+    }
+
+    .entry-link:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 6rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-light);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 2rem; }
+      .entry { padding: 1rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>行星科学相关工作</h1>
+    <a href="../index.html" class="back-link">← 返回首页</a>
+  </header>
+
+  <main>
+    <section>
+      <h2>行星科学</h2>
+      
+      <div class="entry-list">
+
+        <a href="./moon_moho_model/moon_moho_model.html" class="entry">
+          <div class="entry-title">月球莫霍面模型</div>
+          <div class="entry-desc">使用Uieda et al (2017)莫霍面反演方法反演的月球莫霍面模型</div>
+          <div class="entry-link">点击查看 →</div>
+        </a>
+
+        <!-- 继续添加其他条目 -->
+        <!-- 示例： -->
+        <!-- 
+        <a href="./pages/另一本书.html" class="entry">
+          <div class="entry-title">太阳物理学导论</div>
+          <div class="entry-desc">黑子、耀斑、日冕、磁重联等章节摘要与公式整理</div>
+          <div class="entry-link">阅读笔记 →</div>
+        </a>
+        -->
+
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p> 2026 NeuStr • Powered by GitHub Pages & AIwritten HTML</p>
+  </footer>
+
+</body>
+</html>

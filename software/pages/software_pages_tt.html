@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PlasmaSim - NeuStr</title>  <!-- 改成你的软件名 -->
+  <meta name="description" content="PlasmaSim：空间等离子体模拟工具，用于磁层、太阳风等研究">
+  
+  <!-- 字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --text: #e0e0e0;
+      --text-light: #a0a0a0;
+      --accent: #00d4ff;
+      --accent-dim: #0099bb;
+      --card: #161616;
+      --border: #222;
+      --hover-bg: #1a1a1a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.6;
+      padding: 32px 16px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--accent-dim);
+    }
+
+    h1 {
+      font-size: 3.2rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      letter-spacing: -1px;
+    }
+
+    .tagline {
+      font-size: 1.4rem;
+      color: var(--text-light);
+      margin-bottom: 2rem;
+    }
+
+    .hero-btn {
+      display: inline-block;
+      background: var(--accent-dim);
+      color: white;
+      padding: 0.9rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+      margin: 0.5rem;
+    }
+
+    .hero-btn:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .hero-btn.secondary {
+      background: transparent;
+      border: 1px solid var(--accent-dim);
+      color: var(--accent);
+    }
+
+    .hero-btn.secondary:hover {
+      background: rgba(0, 212, 255, 0.08);
+    }
+
+    section {
+      margin-bottom: 5rem;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      border-left: 4px solid var(--accent-dim);
+      padding-left: 12px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.6rem;
+      transition: all 0.18s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--accent-dim);
+      transform: translateY(-4px);
+    }
+
+    .feature-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.8rem;
+      color: white;
+    }
+
+    .screenshot {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .screenshot img {
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .tech-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .tech-tag {
+      background: rgba(0, 212, 255, 0.12);
+      color: var(--accent);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      border: 1px solid var(--accent-dim);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 6rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2.6rem; }
+      .features { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="../index.html" class="back-link">← 返回首页</a>
+    <h1>PlasmaSim</h1>
+    <div class="tagline">轻量级空间等离子体粒子模拟工具</div>
+
+    <div>
+      <a href="#download" class="hero-btn">立即下载</a>
+      <a href="https://github.com/yourusername/plasmasim" target="_blank" class="hero-btn secondary">GitHub 仓库</a>
+    </div>
+  </header>
+
+  <main>
+
+    <section>
+      <h2>核心功能</h2>
+      <div class="features">
+        <div class="feature-card">
+          <h3>粒子-in-cell (PIC) 方法</h3>
+          <p>支持 1D/2D/3D 电磁/静电模拟，高效 Boris 推动器</p>
+        </div>
+        <div class="feature-card">
+          <h3>多种边界条件</h3>
+          <p>周期、吸收、反射、粒子源等多种边界处理方式</p>
+        </div>
+        <div class="feature-card">
+          <h3>实时可视化</h3>
+          <p>内置 Matplotlib / PyVista 支持，密度、场、相空间一键绘制</p>
+        </div>
+        <div class="feature-card">
+          <h3>高性能并行</h3>
+          <p>支持 MPI + OpenMP 混合并行，轻松扩展到数百核</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>界面预览</h2>
+      <div class="screenshot">
+        <!-- 替换成你真实的截图链接 -->
+        <img src="https://via.placeholder.com/800x500/161616/00d4ff?text=PlasmaSim+Dashboard" alt="PlasmaSim 主界面">
+        <p style="margin-top: 1rem; color: var(--text-light);">主界面：参数设置 + 实时场/粒子可视化</p>
+      </div>
+      <div class="screenshot">
+        <img src="https://via.placeholder.com/800x500/161616/00d4ff?text=Phase+Space+Plot" alt="相空间图">
+        <p style="margin-top: 1rem; color: var(--text-light);">相空间分布 + 能量谱分析</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>技术栈</h2>
+      <div class="tech-stack">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">NumPy / SciPy</span>
+        <span class="tech-tag">Numba</span>
+        <span class="tech-tag">MPI4Py</span>
+        <span class="tech-tag">Matplotlib</span>
+        <span class="tech-tag">PyVista</span>
+        <span class="tech-tag">OpenMP</span>
+      </div>
+    </section>
+
+    <section id="download">
+      <h2>获取方式</h2>
+      <p>当前版本：v0.8.2 (2026-03)</p>
+      <p>
+        <a href="https://github.com/yourusername/plasmasim/releases" class="hero-btn">GitHub Releases 下载</a>
+      </p>
+      <p style="margin-top: 1.5rem; color: var(--text-light);">
+        安装： <code>pip install plasmasim</code> （pip 暂未上架，敬请使用源码安装）
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 NeuStr • Powered by Handwritten HTML</p>
+  </footer>
+
+</body>
+</html>
