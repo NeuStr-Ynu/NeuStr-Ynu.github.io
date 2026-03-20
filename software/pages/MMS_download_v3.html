@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MMS_download_v3 - MMS卫星数据批量下载工具</title>
+  <meta name="description" content="轻量级MATLAB工具，从NASA SPDF下载MMS卫星数据（FGM、FPI等），支持burst/survey模式，严格按网页目录保存">
+  
+  <!-- 字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --text: #ffffff;          /* 全部主文字改成纯白 */
+      --text-light: #ffffff;    /* 辅助文字也改白（可读性更高） */
+      --accent: #00d4ff;
+      --accent-dim: #0099bb;
+      --card: #161616;
+      --border: #333;           /* 边框稍亮一点，避免太暗 */
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.6;
+      padding: 32px 16px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header { text-align: center; margin-bottom: 4rem; }
+
+    .back-link {
+      display: inline-block;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    .back-link:hover { color: var(--accent-dim); }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      letter-spacing: -0.8px;
+      color: var(--text);  /* 确保标题也是白 */
+    }
+
+    .tagline {
+      font-size: 1.35rem;
+      color: var(--text);  /* 副标题也白 */
+      margin-bottom: 2rem;
+    }
+
+    .hero-btn {
+      display: inline-block;
+      background: var(--accent-dim);
+      color: #ffffff;
+      padding: 0.9rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      margin: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .hero-btn:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .hero-btn.secondary {
+      background: transparent;
+      border: 1px solid var(--accent-dim);
+      color: var(--accent);
+    }
+
+    section { margin-bottom: 5rem; }
+
+    h2 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+      font-weight: 500;
+      border-left: 4px solid var(--accent-dim);
+      padding-left: 12px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.6rem;
+      transition: all 0.18s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--accent-dim);
+      transform: translateY(-4px);
+    }
+
+    .feature-card p {
+      color: var(--text);  /* 卡片内文字也白 */
+    }
+
+    .gif-container {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      margin: 2rem 0;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .gif-container img {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,212,255,0.08);
+    }
+
+    .gif-container p {
+      margin-top: 1rem;
+      color: var(--text);  /* GIF说明文字也白 */
+      font-size: 0.95rem;
+    }
+
+    pre {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem;
+      color: #e0ffe0;  /* 代码高亮用浅绿，更醒目 */
+    }
+
+    code { background: #111; padding: 2px 5px; border-radius: 4px; color: var(--text); }
+
+    footer {
+      text-align: center;
+      margin-top: 6rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2.4rem; }
+      .features { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="../index.html" class="back-link">← 返回首页</a>
+    <h1>MMS_download_v3</h1>
+    <div class="tagline">轻量增强版 MMS 卫星数据批量下载工具</div>
+
+    <div>
+      <a href="https://github.com/NeuStr-Ynu/MMS_data_downloader" target="_blank" class="hero-btn">Download: Github</a>
+    </div>
+  </header>
+
+  <main>
+
+    <section>
+      <h2>运行演示</h2>
+      <div class="gif-container">
+        <img src="../gif/mms_download.gif" 
+             alt="MMS_download 运行演示 GIF">
+        <p>演示：批量下载 MMS1 FGM burst 数据，文件自动按日期目录保存。支持多通道下载，支持多数据同时下载</p>
+        <p>注释：文件名称是数据文件的标签文件，也就是数据文件时间戳前面那一部分。不同的数据请用英文的分号分隔开“;”</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>适用场景</h2>
+      <ul style="margin-left: 1.5rem; list-style-type: disc; color: var(--text);">
+        <li>MMS FGM、FPI、SCM 等仪器 burst/survey 模式数据批量获取</li>
+        <li>处理 NASA SPDF 服务器偶尔 404 或子目录变化的问题</li>
+        <li>科研笔记/项目中需要可靠、可复现的数据下载流程</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 子鹏 (Zipeng Wang) • Powered by AIwritten HTML & MATLAB</p>
+  </footer>
+
+</body>
+</html>
