@@ -123,13 +123,8 @@
       line-height: 2;
       font-size: 24px;
       letter-spacing: 0.5px;
-      padding: 6px 0;
-      border-bottom: 1px dashed rgba(148, 163, 184, 0.14);
-      word-break: break-all;
-    }
-
-    .article-line:last-child {
-      border-bottom: none;
+      word-break: break-word;
+      white-space: pre-wrap;
     }
 
     .char {
@@ -231,7 +226,6 @@
         <select id="presetSelect">
           <option value="sample1">示例文章 1</option>
           <option value="sample2">示例文章 2</option>
-										<option value="sample3">示例文章 3</option>
           <option value="custom">自定义文章</option>
         </select>
         <select id="timeSelect">
@@ -280,8 +274,8 @@
   <script>
     const samples = {
       sample1: `春天来了，风里带着一点温暖，也带着一点潮湿的气息。街边的树慢慢冒出新芽，阳光落在窗台上，让人忍不住想打开书，认真地读上几页。打字练习和读书一样，都需要耐心。只要每天坚持一点点，你会发现自己的速度和准确率都会慢慢提高。`,
-      sample2: `学习一项技能，最重要的不是一下子做得多快，而是能够持续地练习。刚开始的时候，出错是很正常的事情，不必着急。先把每一个字打准确，再慢慢提高节奏。等到手指形成记忆之后，速度自然会提升。`
-						sample3: `“There she is!” the ponies shouted. “Seize her! Giddyup!” The voices woke Daring Do from a sleep so deep that she had almost forgotten where she was. A quick glance around reminded the pony adventurer that she was still in a tent in the middle of nowhere, with nopony but herself to rely on.`
+      sample2: `学习一项技能，最重要的不是一下子做得多快，而是能够持续地练习。刚开始的时候，出错是很正常的事情，不必着急。先把每一个字打准确，再慢慢提高节奏。等到手指形成记忆之后，速度自然会提升。`,
+      sample3: `“There she is!” the ponies shouted. “Seize her! Giddyup!” The voices woke Daring Do from a sleep so deep that she had almost forgotten where she was. A quick glance around reminded the pony adventurer that she was still in a tent in the middle of nowhere, with nopony but herself to rely on.`
     };
 
     const presetSelect = document.getElementById('presetSelect');
@@ -308,51 +302,39 @@
       if (presetSelect.value === 'custom') {
         return customText.value.trim() || '请先输入你自己的练习文章。';
       }
-      return samples[presetSelect.value];
-    }
-
-    function splitLines(text, charsPerLine = 22) {
-      const lines = [];
-      for (let i = 0; i < text.length; i += charsPerLine) {
-        lines.push(text.slice(i, i + charsPerLine));
-      }
-      return lines;
+      return samples[presetSelect.value] || '';
     }
 
     function renderArticle() {
       const typed = inputBox.value;
-      const lines = splitLines(targetText, 22);
-      let globalIndex = 0;
       articleBox.innerHTML = '';
 
-      lines.forEach(line => {
-        const lineEl = document.createElement('div');
-        lineEl.className = 'article-line';
+      const paragraph = document.createElement('div');
+      paragraph.className = 'article-line';
 
-        for (const ch of line) {
-          const span = document.createElement('span');
-          span.className = 'char pending';
-          span.textContent = ch;
+      for (let i = 0; i < targetText.length; i++) {
+        const ch = targetText[i];
+        const span = document.createElement('span');
+        span.className = 'char pending';
+        span.textContent = ch;
 
-          const typedChar = typed[globalIndex];
-          if (typedChar != null) {
-            if (typedChar === ch) {
-              span.className = 'char correct';
-            } else {
-              span.className = 'char wrong';
-            }
+        const typedChar = typed[i];
+        if (typedChar != null) {
+          if (typedChar === ch) {
+            span.className = 'char correct';
+          } else {
+            span.className = 'char wrong';
           }
-
-          if (globalIndex === typed.length && !finished) {
-            span.classList.add('current');
-          }
-
-          lineEl.appendChild(span);
-          globalIndex++;
         }
 
-        articleBox.appendChild(lineEl);
-      });
+        if (i === typed.length && !finished) {
+          span.classList.add('current');
+        }
+
+        paragraph.appendChild(span);
+      }
+
+      articleBox.appendChild(paragraph);
     }
 
     function updateStats() {
