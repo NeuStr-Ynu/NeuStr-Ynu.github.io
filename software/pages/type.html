@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>打字练习</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --blue: #38bdf8;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .app {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(17, 24, 39, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.28);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+    }
+
+    .sub {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat {
+      background: var(--panel-2);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button, select {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 15px;
+    }
+
+    button {
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      border-color: var(--blue);
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+    }
+
+    .article-box {
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      min-height: 320px;
+    }
+
+    .article-line {
+      line-height: 2;
+      font-size: 24px;
+      letter-spacing: 0.5px;
+      padding: 6px 0;
+      border-bottom: 1px dashed rgba(148, 163, 184, 0.14);
+      word-break: break-all;
+    }
+
+    .article-line:last-child {
+      border-bottom: none;
+    }
+
+    .char {
+      border-radius: 4px;
+      padding: 1px 1px;
+    }
+
+    .char.pending {
+      color: #cbd5e1;
+    }
+
+    .char.correct {
+      color: var(--green);
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .char.wrong {
+      color: white;
+      background: rgba(239, 68, 68, 0.9);
+    }
+
+    .char.current {
+      outline: 2px solid var(--yellow);
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    .typing-panel {
+      display: grid;
+      gap: 12px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 240px;
+      resize: vertical;
+      background: #020617;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 20px;
+      line-height: 1.8;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12);
+    }
+
+    .tips {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .custom-text {
+      width: 100%;
+      min-height: 120px;
+      margin-top: 12px;
+      background: #020617;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 15px;
+      line-height: 1.7;
+      resize: vertical;
+    }
+
+    .finished {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    @media (max-width: 860px) {
+      .toolbar,
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .article-line {
+        font-size: 20px;
+      }
+
+      textarea {
+        min-height: 180px;
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card">
+      <h1>打字练习</h1>
+      <div class="sub">上方文章会按行显示。你在下方输入时，会实时逐字对比：正确变绿，错误变红，还有倒计时、速度和正确率。</div>
+      <div class="controls">
+        <select id="presetSelect">
+          <option value="sample1">示例文章 1</option>
+          <option value="sample2">示例文章 2</option>
+          <option value="custom">自定义文章</option>
+        </select>
+        <select id="timeSelect">
+          <option value="60">60 秒</option>
+          <option value="120" selected>120 秒</option>
+          <option value="180">180 秒</option>
+          <option value="300">300 秒</option>
+        </select>
+        <button id="startBtn">开始</button>
+        <button id="resetBtn">重置</button>
+      </div>
+      <textarea id="customText" class="custom-text" placeholder="如果你想练习自己的文章，把内容贴到这里，然后选择“自定义文章”。"></textarea>
+    </div>
+
+    <div class="toolbar">
+      <div class="stat">
+        <div class="stat-label">倒计时</div>
+        <div class="stat-value" id="timer">120</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">进度</div>
+        <div class="stat-value" id="progress">0%</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">正确率</div>
+        <div class="stat-value" id="accuracy">100%</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">速度</div>
+        <div class="stat-value" id="speed">0 字/分</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="card">
+        <div class="article-box" id="articleBox"></div>
+      </div>
+
+      <div class="card typing-panel">
+        <textarea id="inputBox" placeholder="点击开始后，在这里输入..." disabled></textarea>
+        <div class="tips" id="statusText">准备开始。选择文章和时长后，点击“开始”。</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const samples = {
+      sample1: `春天来了，风里带着一点温暖，也带着一点潮湿的气息。街边的树慢慢冒出新芽，阳光落在窗台上，让人忍不住想打开书，认真地读上几页。打字练习和读书一样，都需要耐心。只要每天坚持一点点，你会发现自己的速度和准确率都会慢慢提高。`,
+      sample2: `学习一项技能，最重要的不是一下子做得多快，而是能够持续地练习。刚开始的时候，出错是很正常的事情，不必着急。先把每一个字打准确，再慢慢提高节奏。等到手指形成记忆之后，速度自然会提升。`
+    };
+
+    const presetSelect = document.getElementById('presetSelect');
+    const timeSelect = document.getElementById('timeSelect');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const customText = document.getElementById('customText');
+    const articleBox = document.getElementById('articleBox');
+    const inputBox = document.getElementById('inputBox');
+    const timerEl = document.getElementById('timer');
+    const progressEl = document.getElementById('progress');
+    const accuracyEl = document.getElementById('accuracy');
+    const speedEl = document.getElementById('speed');
+    const statusText = document.getElementById('statusText');
+
+    let targetText = '';
+    let timeLeft = 120;
+    let totalTime = 120;
+    let timer = null;
+    let started = false;
+    let finished = false;
+
+    function getSelectedText() {
+      if (presetSelect.value === 'custom') {
+        return customText.value.trim() || '请先输入你自己的练习文章。';
+      }
+      return samples[presetSelect.value];
+    }
+
+    function splitLines(text, charsPerLine = 22) {
+      const lines = [];
+      for (let i = 0; i < text.length; i += charsPerLine) {
+        lines.push(text.slice(i, i + charsPerLine));
+      }
+      return lines;
+    }
+
+    function renderArticle() {
+      const typed = inputBox.value;
+      const lines = splitLines(targetText, 22);
+      let globalIndex = 0;
+      articleBox.innerHTML = '';
+
+      lines.forEach(line => {
+        const lineEl = document.createElement('div');
+        lineEl.className = 'article-line';
+
+        for (const ch of line) {
+          const span = document.createElement('span');
+          span.className = 'char pending';
+          span.textContent = ch;
+
+          const typedChar = typed[globalIndex];
+          if (typedChar != null) {
+            if (typedChar === ch) {
+              span.className = 'char correct';
+            } else {
+              span.className = 'char wrong';
+            }
+          }
+
+          if (globalIndex === typed.length && !finished) {
+            span.classList.add('current');
+          }
+
+          lineEl.appendChild(span);
+          globalIndex++;
+        }
+
+        articleBox.appendChild(lineEl);
+      });
+    }
+
+    function updateStats() {
+      const typed = inputBox.value;
+      let correct = 0;
+      for (let i = 0; i < typed.length; i++) {
+        if (typed[i] === targetText[i]) correct++;
+      }
+
+      const accuracy = typed.length ? Math.round((correct / typed.length) * 100) : 100;
+      const progress = targetText.length ? Math.min(100, Math.round((typed.length / targetText.length) * 100)) : 0;
+      const elapsed = Math.max(1, totalTime - timeLeft);
+      const speed = Math.round((correct / elapsed) * 60);
+
+      accuracyEl.textContent = accuracy + '%';
+      progressEl.textContent = progress + '%';
+      speedEl.textContent = speed + ' 字/分';
+    }
+
+    function finishPractice(message) {
+      finished = true;
+      started = false;
+      clearInterval(timer);
+      inputBox.disabled = true;
+      statusText.innerHTML = `<span class="finished">${message}</span>`;
+      renderArticle();
+      updateStats();
+    }
+
+    function startPractice() {
+      targetText = getSelectedText();
+      totalTime = Number(timeSelect.value);
+      timeLeft = totalTime;
+      started = true;
+      finished = false;
+      inputBox.value = '';
+      inputBox.disabled = false;
+      inputBox.focus();
+      timerEl.textContent = timeLeft;
+      statusText.textContent = '练习已开始，开始输入吧。';
+      renderArticle();
+      updateStats();
+
+      clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+        updateStats();
+
+        if (timeLeft <= 0) {
+          finishPractice('时间到，练习结束。');
+        }
+      }, 1000);
+    }
+
+    function resetPractice() {
+      clearInterval(timer);
+      targetText = getSelectedText();
+      totalTime = Number(timeSelect.value);
+      timeLeft = totalTime;
+      started = false;
+      finished = false;
+      inputBox.value = '';
+      inputBox.disabled = true;
+      timerEl.textContent = timeLeft;
+      accuracyEl.textContent = '100%';
+      progressEl.textContent = '0%';
+      speedEl.textContent = '0 字/分';
+      statusText.textContent = '已重置。点击“开始”重新练习。';
+      renderArticle();
+    }
+
+    startBtn.addEventListener('click', startPractice);
+    resetBtn.addEventListener('click', resetPractice);
+
+    presetSelect.addEventListener('change', () => {
+      resetPractice();
+    });
+
+    timeSelect.addEventListener('change', () => {
+      resetPractice();
+    });
+
+    customText.addEventListener('input', () => {
+      if (presetSelect.value === 'custom') {
+        resetPractice();
+      }
+    });
+
+    inputBox.addEventListener('input', () => {
+      if (!started || finished) return;
+      renderArticle();
+      updateStats();
+
+      if (inputBox.value.length >= targetText.length) {
+        finishPractice('全文完成，恭喜你打完了！');
+      }
+    });
+
+    targetText = getSelectedText();
+    renderArticle();
+    timerEl.textContent = timeSelect.value;
+  </script>
+</body>
+</html>
