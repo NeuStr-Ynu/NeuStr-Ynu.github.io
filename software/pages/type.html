@@ -79,12 +79,7 @@
       font-weight: 700;
     }
 
-    .controls {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+    .control
 
     button, select {
       background: var(--panel-2);
@@ -226,6 +221,7 @@
         <select id="presetSelect">
           <option value="sample1">示例文章 1</option>
           <option value="sample2">示例文章 2</option>
+          <option value="sample3">示例文章 3</option>
           <option value="custom">自定义文章</option>
         </select>
         <select id="timeSelect">
@@ -234,6 +230,7 @@
           <option value="180">180 秒</option>
           <option value="300">300 秒</option>
         </select>
+        <label class="switch-wrap"><input type="checkbox" id="strictMode" /> 错字必须改对</label>
         <button id="startBtn">开始</button>
         <button id="resetBtn">重置</button>
       </div>
@@ -267,6 +264,7 @@
       <div class="card typing-panel">
         <textarea id="inputBox" placeholder="点击开始后，在这里输入..." disabled></textarea>
         <div class="tips" id="statusText">准备开始。选择文章和时长后，点击“开始”。</div>
+        <div class="tips" id="detailText">中文显示字/分；英文会额外显示 WPM。开启“错字必须改对”后，打错时不能继续往后输入。</div>
       </div>
     </div>
   </div>
