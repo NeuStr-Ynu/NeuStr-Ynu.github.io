@@ -79,7 +79,30 @@
       font-weight: 700;
     }
 
-    .control
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .switch-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 15px;
+      user-select: none;
+    }
+
+    .switch-wrap input {
+      margin: 0;
+      accent-color: var(--blue);
+    }
 
     button, select {
       background: var(--panel-2);
@@ -112,6 +135,9 @@
       border-radius: 16px;
       padding: 18px;
       min-height: 320px;
+      max-height: 420px;
+      overflow: auto;
+      scroll-behavior: smooth;
     }
 
     .article-line {
@@ -120,6 +146,14 @@
       letter-spacing: 0.5px;
       word-break: break-word;
       white-space: pre-wrap;
+    }
+
+    .article-line.code-mode {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 18px;
+      line-height: 1.8;
+      letter-spacing: 0;
+      tab-size: 2;
     }
 
     .char {
@@ -163,6 +197,14 @@
       font-size: 20px;
       line-height: 1.8;
       outline: none;
+    }
+
+    textarea.code-input {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 16px;
+      line-height: 1.8;
+      tab-size: 2;
+      white-space: pre;
     }
 
     textarea:focus {
@@ -218,11 +260,21 @@
       <h1>打字练习</h1>
       <div class="sub">上方文章会按行显示。你在下方输入时，会实时逐字对比：正确变绿，错误变红，还有倒计时、速度和正确率。</div>
       <div class="controls">
+        <select id="modeSelect">
+          <option value="text">文章模式</option>
+          <option value="code">代码模式</option>
+        </select>
         <select id="presetSelect">
           <option value="sample1">示例文章 1</option>
           <option value="sample2">示例文章 2</option>
           <option value="sample3">示例文章 3</option>
           <option value="custom">自定义文章</option>
+        </select>
+        <select id="codePresetSelect" style="display:none;">
+          <option value="code1">JavaScript 示例</option>
+          <option value="code2">Python 示例</option>
+          <option value="code3">HTML 示例</option>
+          <option value="customCode">自定义代码</option>
         </select>
         <select id="timeSelect">
           <option value="60">60 秒</option>
@@ -235,6 +287,7 @@
         <button id="resetBtn">重置</button>
       </div>
       <textarea id="customText" class="custom-text" placeholder="如果你想练习自己的文章，把内容贴到这里，然后选择“自定义文章”。"></textarea>
+      <textarea id="customCode" class="custom-text" placeholder="如果你想练习自己的代码，把代码贴到这里，然后选择“自定义代码”。" style="display:none;"></textarea>
     </div>
 
     <div class="toolbar">
@@ -273,14 +326,41 @@
     const samples = {
       sample1: `春天来了，风里带着一点温暖，也带着一点潮湿的气息。街边的树慢慢冒出新芽，阳光落在窗台上，让人忍不住想打开书，认真地读上几页。打字练习和读书一样，都需要耐心。只要每天坚持一点点，你会发现自己的速度和准确率都会慢慢提高。`,
       sample2: `学习一项技能，最重要的不是一下子做得多快，而是能够持续地练习。刚开始的时候，出错是很正常的事情，不必着急。先把每一个字打准确，再慢慢提高节奏。等到手指形成记忆之后，速度自然会提升。`,
-      sample3: `“There she is!” the ponies shouted. “Seize her! Giddyup!” The voices woke Daring Do from a sleep so deep that she had almost forgotten where she was. A quick glance around reminded the pony adventurer that she was still in a tent in the middle of nowhere, with nopony but herself to rely on.`
+      sample3: `"There she is!" the ponies shouted. "Seize her! Giddyup!" The voices woke Daring Do from a sleep so deep that she had almost forgotten where she was. A quick glance around reminded the pony adventurer that she was still in a tent in the middle of nowhere, with nopony but herself to rely on.`
     };
 
+    const codeSamples = {
+      code1: `function greet(name) {
+  const message = \`Hello, ${name}!\`;
+  console.log(message);
+  return message;
+}
+
+const users = ['Alice', 'Bob', 'Charlie'];
+users.forEach(user => greet(user));`,
+      code2: `def fibonacci(n):
+    sequence = [0, 1]
+    while len(sequence) < n:
+        sequence.append(sequence[-1] + sequence[-2])
+    return sequence[:n]
+
+print(fibonacci(10))`,
+      code3: `<div class="card">
+  <h2>Typing Practice</h2>
+  <p>Keep typing and stay focused.</p>
+  <button class="btn">Start</button>
+</div>`
+    };
+
+    const modeSelect = document.getElementById('modeSelect');
     const presetSelect = document.getElementById('presetSelect');
+    const codePresetSelect = document.getElementById('codePresetSelect');
     const timeSelect = document.getElementById('timeSelect');
     const startBtn = document.getElementById('startBtn');
     const resetBtn = document.getElementById('resetBtn');
+    const strictMode = document.getElementById('strictMode');
     const customText = document.getElementById('customText');
+    const customCode = document.getElementById('customCode');
     const articleBox = document.getElementById('articleBox');
     const inputBox = document.getElementById('inputBox');
     const timerEl = document.getElementById('timer');
@@ -288,6 +368,7 @@
     const accuracyEl = document.getElementById('accuracy');
     const speedEl = document.getElementById('speed');
     const statusText = document.getElementById('statusText');
+    const detailText = document.getElementById('detailText');
 
     let targetText = '';
     let timeLeft = 120;
@@ -295,20 +376,90 @@
     let timer = null;
     let started = false;
     let finished = false;
+    let lastValidValue = '';
 
     function getSelectedText() {
+      if (modeSelect.value === 'code') {
+        if (codePresetSelect.value === 'customCode') {
+          return customCode.value || '请先输入你自己的代码。';
+        }
+        return codeSamples[codePresetSelect.value] || '';
+      }
+
       if (presetSelect.value === 'custom') {
         return customText.value.trim() || '请先输入你自己的练习文章。';
       }
       return samples[presetSelect.value] || '';
     }
 
+    function updateModeUI() {
+      const isCodeMode = modeSelect.value === 'code';
+      presetSelect.style.display = isCodeMode ? 'none' : '';
+      customText.style.display = isCodeMode ? 'none' : '';
+      codePresetSelect.style.display = isCodeMode ? '' : 'none';
+      customCode.style.display = isCodeMode ? '' : 'none';
+      inputBox.classList.toggle('code-input', isCodeMode);
+
+      if (isCodeMode) {
+        inputBox.placeholder = '点击开始后，在这里输入代码...';
+        detailText.textContent = '代码模式会保留空格、缩进和换行，请尽量完全一致地输入。';
+      } else {
+        inputBox.placeholder = '点击开始后，在这里输入...';
+        detailText.textContent = '中文显示字/分；英文会额外显示 WPM。开启“错字必须改对”后，打错时不能继续往后输入。';
+      }
+    }
+
+    function isEnglishHeavy(text) {
+      const latinMatches = text.match(/[A-Za-z]/g) || [];
+      return latinMatches.length >= Math.max(20, text.length * 0.3);
+    }
+
+    function getCorrectCount(typed) {
+      let correct = 0;
+      for (let i = 0; i < typed.length; i++) {
+        if (typed[i] === targetText[i]) correct++;
+      }
+      return correct;
+    }
+
+    function getFirstWrongIndex(typed) {
+      for (let i = 0; i < typed.length; i++) {
+        if (typed[i] !== targetText[i]) return i;
+      }
+      return -1;
+    }
+
+    function countCorrectWords(typed) {
+      let current = '';
+      let correctWords = 0;
+      for (let i = 0; i < typed.length; i++) {
+        const t = typed[i];
+        const expected = targetText[i];
+        if (/[A-Za-z]/.test(t)) {
+          current += (t === expected) ? t : '#';
+        } else {
+          if (current && !current.includes('#')) correctWords++;
+          current = '';
+        }
+      }
+      if (current && !current.includes('#')) correctWords++;
+      return correctWords;
+    }
+
+    function scrollCurrentIntoView() {
+      const currentEl = articleBox.querySelector('.current');
+      if (currentEl) {
+        currentEl.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+      }
+    }
+
     function renderArticle() {
       const typed = inputBox.value;
+      const isCodeMode = modeSelect.value === 'code';
       articleBox.innerHTML = '';
 
       const paragraph = document.createElement('div');
-      paragraph.className = 'article-line';
+      paragraph.className = isCodeMode ? 'article-line code-mode' : 'article-line';
 
       for (let i = 0; i < targetText.length; i++) {
         const ch = targetText[i];
@@ -333,23 +484,32 @@
       }
 
       articleBox.appendChild(paragraph);
+      scrollCurrentIntoView();
     }
 
     function updateStats() {
       const typed = inputBox.value;
-      let correct = 0;
-      for (let i = 0; i < typed.length; i++) {
-        if (typed[i] === targetText[i]) correct++;
-      }
-
+      const correct = getCorrectCount(typed);
       const accuracy = typed.length ? Math.round((correct / typed.length) * 100) : 100;
       const progress = targetText.length ? Math.min(100, Math.round((typed.length / targetText.length) * 100)) : 0;
       const elapsed = Math.max(1, totalTime - timeLeft);
-      const speed = Math.round((correct / elapsed) * 60);
+      const charSpeed = Math.round((correct / elapsed) * 60);
+      const isCodeMode = modeSelect.value === 'code';
 
       accuracyEl.textContent = accuracy + '%';
       progressEl.textContent = progress + '%';
-      speedEl.textContent = speed + ' 字/分';
+      speedEl.textContent = `${charSpeed} 字/分`;
+
+      if (isCodeMode) {
+        const linesDone = typed.split('\n').length;
+        detailText.textContent = `代码模式会保留空格、缩进和换行，请尽量完全一致地输入。当前已输入 ${linesDone} 行。`;
+      } else if (isEnglishHeavy(targetText)) {
+        const wpm = Math.round((correct / 5 / elapsed) * 60);
+        const correctWords = countCorrectWords(typed);
+        detailText.textContent = `英文模式参考：${wpm} WPM，完整正确单词数 ${correctWords}。开启“错字必须改对”后，打错时不能继续往后输入。`;
+      } else {
+        detailText.textContent = '中文显示字/分；英文会额外显示 WPM。开启“错字必须改对”后，打错时不能继续往后输入。';
+      }
     }
 
     function finishPractice(message) {
@@ -368,6 +528,7 @@
       timeLeft = totalTime;
       started = true;
       finished = false;
+      lastValidValue = '';
       inputBox.value = '';
       inputBox.disabled = false;
       inputBox.focus();
@@ -381,7 +542,6 @@
         timeLeft--;
         timerEl.textContent = timeLeft;
         updateStats();
-
         if (timeLeft <= 0) {
           finishPractice('时间到，练习结束。');
         }
@@ -395,6 +555,7 @@
       timeLeft = totalTime;
       started = false;
       finished = false;
+      lastValidValue = '';
       inputBox.value = '';
       inputBox.disabled = true;
       timerEl.textContent = timeLeft;
@@ -402,36 +563,62 @@
       progressEl.textContent = '0%';
       speedEl.textContent = '0 字/分';
       statusText.textContent = '已重置。点击“开始”重新练习。';
+      detailText.textContent = '中文显示字/分；英文会额外显示 WPM。开启“错字必须改对”后，打错时不能继续往后输入。';
       renderArticle();
     }
 
     startBtn.addEventListener('click', startPractice);
     resetBtn.addEventListener('click', resetPractice);
-
-    presetSelect.addEventListener('change', () => {
+    modeSelect.addEventListener('change', () => {
+      updateModeUI();
       resetPractice();
     });
-
-    timeSelect.addEventListener('change', () => {
-      resetPractice();
-    });
+    presetSelect.addEventListener('change', resetPractice);
+    codePresetSelect.addEventListener('change', resetPractice);
+    timeSelect.addEventListener('change', resetPractice);
+    strictMode.addEventListener('change', () => inputBox.focus());
 
     customText.addEventListener('input', () => {
-      if (presetSelect.value === 'custom') {
-        resetPractice();
-      }
+      if (presetSelect.value === 'custom' && modeSelect.value === 'text') resetPractice();
+    });
+
+    customCode.addEventListener('input', () => {
+      if (codePresetSelect.value === 'customCode' && modeSelect.value === 'code') resetPractice();
     });
 
     inputBox.addEventListener('input', () => {
       if (!started || finished) return;
+
+      let currentValue = inputBox.value;
+
+      if (currentValue.length > targetText.length) {
+        currentValue = currentValue.slice(0, targetText.length);
+        inputBox.value = currentValue;
+      }
+
+      if (strictMode.checked) {
+        const wrongIndex = getFirstWrongIndex(currentValue);
+        if (wrongIndex !== -1) {
+          inputBox.value = currentValue.slice(0, wrongIndex + 1);
+          statusText.textContent = '这一位打错了，先改对再继续。';
+        } else {
+          lastValidValue = currentValue;
+          statusText.textContent = '练习已开始，开始输入吧。';
+        }
+      } else {
+        lastValidValue = currentValue;
+        statusText.textContent = '练习已开始，开始输入吧。';
+      }
+
       renderArticle();
       updateStats();
 
-      if (inputBox.value.length >= targetText.length) {
+      if (inputBox.value.length >= targetText.length && getFirstWrongIndex(inputBox.value) === -1) {
         finishPractice('全文完成，恭喜你打完了！');
       }
     });
 
+    updateModeUI();
     targetText = getSelectedText();
     renderArticle();
     timerEl.textContent = timeSelect.value;

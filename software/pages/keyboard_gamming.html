@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>键盘按键小游戏</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --border: #334155;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --good: #22c55e;
+      --bad: #ef4444;
+      --warn: #f59e0b;
+      --key: #1e293b;
+      --key-top: #334155;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0%, #020617 65%);
+      color: var(--text);
+      padding: 24px;
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(17, 24, 39, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+    }
+
+    .sub {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    button,
+    select {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 15px;
+    }
+
+    button {
+      cursor: pointer;
+      transition: 0.16s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .target-panel {
+      display: grid;
+      gap: 14px;
+      position: sticky;
+      top: 24px;
+    }
+
+    .big-target {
+      min-height: 180px;
+      display: grid;
+      place-items: center;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #172554 0%, #0f172a 100%);
+      border: 1px solid #274060;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+      text-align: center;
+      padding: 24px;
+    }
+
+    .target-key {
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 1px;
+    }
+
+    .target-hint {
+      color: var(--muted);
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .status {
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      background: #0b1220;
+      color: var(--muted);
+      line-height: 1.7;
+      min-height: 74px;
+    }
+
+    .status.good { color: #bbf7d0; border-color: rgba(34, 197, 94, 0.35); }
+    .status.bad { color: #fecaca; border-color: rgba(239, 68, 68, 0.35); }
+
+    .keyboard-wrap {
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .keyboard {
+      display: grid;
+      gap: 10px;
+      min-width: 980px;
+      width: max-content;
+      transform-origin: top left;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .key {
+      position: relative;
+      height: 58px;
+      min-width: 58px;
+      padding: 8px;
+      background: linear-gradient(180deg, var(--key-top) 0%, var(--key) 100%);
+      border: 1px solid #475569;
+      border-bottom-width: 4px;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-start;
+      color: var(--text);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.24);
+      transition: 0.12s ease;
+      user-select: none;
+    }
+
+    .key .top,
+    .key .bottom {
+      line-height: 1;
+    }
+
+    .key .top {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .key .bottom {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .key.w1_5 { min-width: 88px; }
+    .key.w1_75 { min-width: 102px; }
+    .key.w2 { min-width: 116px; }
+    .key.w2_25 { min-width: 130px; }
+    .key.w2_75 { min-width: 160px; }
+    .key.w6 { min-width: 360px; }
+
+    .key.active {
+      transform: translateY(-4px) scale(1.04);
+      border-color: var(--warn);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18), 0 18px 30px rgba(245, 158, 11, 0.18);
+      background: linear-gradient(180deg, #7c2d12 0%, #3f1d0f 100%);
+    }
+
+    .key.correct {
+      border-color: var(--good);
+      background: linear-gradient(180deg, #166534 0%, #14532d 100%);
+    }
+
+    .key.wrong {
+      animation: shake 0.22s ease;
+      border-color: var(--bad);
+      background: linear-gradient(180deg, #7f1d1d 0%, #450a0a 100%);
+    }
+
+    .key.pressed {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .legend {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      margin-top: 8px;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-3px); }
+      100% { transform: translateX(0); }
+    }
+
+    @media (max-width: 960px) {
+      .layout,
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .target-panel {
+        position: static;
+      }
+
+      .keyboard {
+        min-width: 900px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 14px;
+      }
+
+      .card {
+        padding: 14px;
+      }
+
+      .keyboard-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .keyboard {
+        min-width: 860px;
+        transform: scale(0.88);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card">
+      <h1>键盘按键小游戏</h1>
+      <div class="sub">屏幕会高亮一个键，你要按下对应按键。适合练字母区、数字区和常见符号。支持计时、计分和连续正确统计。</div>
+      <div class="topbar">
+        <select id="modeSelect">
+          <option value="letters">字母模式</option>
+          <option value="numbers">数字模式</option>
+          <option value="symbols">符号模式</option>
+          <option value="mixed">混合模式</option>
+          <option value="home">主键位模式</option>
+        </select>
+        <select id="timeSelect">
+          <option value="30">30 秒</option>
+          <option value="60" selected>60 秒</option>
+          <option value="120">120 秒</option>
+        </select>
+        <button id="startBtn">开始游戏</button>
+        <button id="resetBtn">重置</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">倒计时</div>
+        <div class="stat-value" id="timer">60</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">得分</div>
+        <div class="stat-value" id="score">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">正确</div>
+        <div class="stat-value" id="correct">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">错误</div>
+        <div class="stat-value" id="wrong">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">连击</div>
+        <div class="stat-value" id="streak">0</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="target-panel">
+        <div class="card big-target">
+          <div>
+            <div class="target-key" id="targetKey">A</div>
+            <div class="target-hint" id="targetHint">点击“开始游戏”</div>
+          </div>
+        </div>
+        <div class="card status" id="statusBox">游戏开始后，跟着高亮键按下对应按键。按对加分，按错扣连击。</div>
+      </div>
+
+      <div class="card keyboard-wrap">
+        <div class="keyboard" id="keyboard"></div>
+        <div class="legend">提示：代码里的键值使用标准键盘事件，比如字母、数字、Space、Enter、Shift、Backspace。这个小游戏主要练习主键区，不包含鼠标点击输入。</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const keyRows = [
+      [
+        { key: 'Backquote', label: '`', bottom: '~' },
+        { key: 'Digit1', label: '1', bottom: '!' },
+        { key: 'Digit2', label: '2', bottom: '@' },
+        { key: 'Digit3', label: '3', bottom: '#' },
+        { key: 'Digit4', label: '4', bottom: '$' },
+        { key: 'Digit5', label: '5', bottom: '%' },
+        { key: 'Digit6', label: '6', bottom: '^' },
+        { key: 'Digit7', label: '7', bottom: '&' },
+        { key: 'Digit8', label: '8', bottom: '*' },
+        { key: 'Digit9', label: '9', bottom: '(' },
+        { key: 'Digit0', label: '0', bottom: ')' },
+        { key: 'Minus', label: '-', bottom: '_' },
+        { key: 'Equal', label: '=', bottom: '+' },
+        { key: 'Backspace', label: 'Backspace', width: 'w2' }
+      ],
+      [
+        { key: 'Tab', label: 'Tab', width: 'w1_5' },
+        { key: 'KeyQ', label: 'Q' },
+        { key: 'KeyW', label: 'W' },
+        { key: 'KeyE', label: 'E' },
+        { key: 'KeyR', label: 'R' },
+        { key: 'KeyT', label: 'T' },
+        { key: 'KeyY', label: 'Y' },
+        { key: 'KeyU', label: 'U' },
+        { key: 'KeyI', label: 'I' },
+        { key: 'KeyO', label: 'O' },
+        { key: 'KeyP', label: 'P' },
+        { key: 'BracketLeft', label: '[', bottom: '{' },
+        { key: 'BracketRight', label: ']', bottom: '}' },
+        { key: 'Backslash', label: '\\', bottom: '|' , width: 'w1_5' }
+      ],
+      [
+        { key: 'CapsLock', label: 'Caps', width: 'w1_75' },
+        { key: 'KeyA', label: 'A' },
+        { key: 'KeyS', label: 'S' },
+        { key: 'KeyD', label: 'D' },
+        { key: 'KeyF', label: 'F' },
+        { key: 'KeyG', label: 'G' },
+        { key: 'KeyH', label: 'H' },
+        { key: 'KeyJ', label: 'J' },
+        { key: 'KeyK', label: 'K' },
+        { key: 'KeyL', label: 'L' },
+        { key: 'Semicolon', label: ';', bottom: ':' },
+        { key: 'Quote', label: "'", bottom: '"' },
+        { key: 'Enter', label: 'Enter', width: 'w2_25' }
+      ],
+      [
+        { key: 'ShiftLeft', label: 'Shift', width: 'w2_25' },
+        { key: 'KeyZ', label: 'Z' },
+        { key: 'KeyX', label: 'X' },
+        { key: 'KeyC', label: 'C' },
+        { key: 'KeyV', label: 'V' },
+        { key: 'KeyB', label: 'B' },
+        { key: 'KeyN', label: 'N' },
+        { key: 'KeyM', label: 'M' },
+        { key: 'Comma', label: ',', bottom: '<' },
+        { key: 'Period', label: '.', bottom: '>' },
+        { key: 'Slash', label: '/', bottom: '?' },
+        { key: 'ShiftRight', label: 'Shift', width: 'w2_75' }
+      ],
+      [
+        { key: 'ControlLeft', label: 'Ctrl', width: 'w1_5' },
+        { key: 'MetaLeft', label: 'Win', width: 'w1_5' },
+        { key: 'AltLeft', label: 'Alt', width: 'w1_5' },
+        { key: 'Space', label: 'Space', width: 'w6' },
+        { key: 'AltRight', label: 'Alt', width: 'w1_5' },
+        { key: 'MetaRight', label: 'Win', width: 'w1_5' },
+        { key: 'ContextMenu', label: 'Menu', width: 'w1_5' },
+        { key: 'ControlRight', label: 'Ctrl', width: 'w1_5' }
+      ]
+    ];
+
+    const pools = {
+      letters: ['KeyA','KeyB','KeyC','KeyD','KeyE','KeyF','KeyG','KeyH','KeyI','KeyJ','KeyK','KeyL','KeyM','KeyN','KeyO','KeyP','KeyQ','KeyR','KeyS','KeyT','KeyU','KeyV','KeyW','KeyX','KeyY','KeyZ'],
+      numbers: ['Digit0','Digit1','Digit2','Digit3','Digit4','Digit5','Digit6','Digit7','Digit8','Digit9'],
+      symbols: ['Minus','Equal','BracketLeft','BracketRight','Backslash','Semicolon','Quote','Comma','Period','Slash','Backquote'],
+      mixed: ['KeyA','KeyS','KeyD','KeyF','KeyJ','KeyK','KeyL','KeyQ','KeyW','KeyE','KeyR','KeyU','KeyI','KeyO','KeyP','Digit1','Digit2','Digit3','Digit4','Digit5','Minus','Equal','Comma','Period','Slash','Space','Enter'],
+      home: ['KeyA','KeyS','KeyD','KeyF','KeyJ','KeyK','KeyL','Semicolon']
+    };
+
+    const keyboardEl = document.getElementById('keyboard');
+    const modeSelect = document.getElementById('modeSelect');
+    const timeSelect = document.getElementById('timeSelect');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const timerEl = document.getElementById('timer');
+    const scoreEl = document.getElementById('score');
+    const correctEl = document.getElementById('correct');
+    const wrongEl = document.getElementById('wrong');
+    const streakEl = document.getElementById('streak');
+    const targetKeyEl = document.getElementById('targetKey');
+    const targetHintEl = document.getElementById('targetHint');
+    const statusBox = document.getElementById('statusBox');
+
+    let currentTarget = null;
+    let score = 0;
+    let correct = 0;
+    let wrong = 0;
+    let streak = 0;
+    let timeLeft = Number(timeSelect.value);
+    let timer = null;
+    let started = false;
+
+    function renderKeyboard() {
+      keyboardEl.innerHTML = '';
+      keyRows.forEach(row => {
+        const rowEl = document.createElement('div');
+        rowEl.className = 'row';
+
+        row.forEach(item => {
+          const keyEl = document.createElement('div');
+          keyEl.className = `key ${item.width || ''}`.trim();
+          keyEl.dataset.key = item.key;
+          keyEl.innerHTML = `
+            <div class="top">${item.label}</div>
+            <div class="bottom">${item.bottom || ''}</div>
+          `;
+          rowEl.appendChild(keyEl);
+        });
+
+        keyboardEl.appendChild(rowEl);
+      });
+
+      fitKeyboard();
+    }
+
+    function fitKeyboard() {
+      const wrap = document.querySelector('.keyboard-wrap');
+      if (!wrap) return;
+
+      keyboardEl.style.transform = 'scale(1)';
+      const available = wrap.clientWidth - 8;
+      const actual = keyboardEl.scrollWidth;
+      if (!available || !actual) return;
+
+      if (actual > available) {
+        const scale = Math.max(0.7, available / actual);
+        keyboardEl.style.transform = `scale(${scale})`;
+      }
+    }
+
+    function clearKeyStates() {
+      document.querySelectorAll('.key').forEach(el => {
+        el.classList.remove('active', 'correct', 'wrong', 'pressed');
+      });
+    }
+
+    function labelForKey(code) {
+      const el = document.querySelector(`.key[data-key="${code}"] .top`);
+      return el ? el.textContent : code;
+    }
+
+    function pickNextKey() {
+      const pool = pools[modeSelect.value];
+      const next = pool[Math.floor(Math.random() * pool.length)];
+      currentTarget = next;
+      targetKeyEl.textContent = labelForKey(next);
+      targetHintEl.textContent = `请按 ${labelForKey(next)} 键`;
+      clearKeyStates();
+      const targetEl = document.querySelector(`.key[data-key="${next}"]`);
+      if (targetEl) targetEl.classList.add('active');
+    }
+
+    function updateStats() {
+      timerEl.textContent = timeLeft;
+      scoreEl.textContent = score;
+      correctEl.textContent = correct;
+      wrongEl.textContent = wrong;
+      streakEl.textContent = streak;
+    }
+
+    function setStatus(text, type = '') {
+      statusBox.textContent = text;
+      statusBox.className = `card status ${type}`.trim();
+    }
+
+    function startGame() {
+      score = 0;
+      correct = 0;
+      wrong = 0;
+      streak = 0;
+      timeLeft = Number(timeSelect.value);
+      started = true;
+      updateStats();
+      setStatus('游戏开始了，跟着高亮键按吧。');
+      pickNextKey();
+
+      clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft -= 1;
+        updateStats();
+        if (timeLeft <= 0) {
+          finishGame();
+        }
+      }, 1000);
+    }
+
+    function finishGame() {
+      started = false;
+      clearInterval(timer);
+      const accuracy = (correct + wrong) ? Math.round((correct / (correct + wrong)) * 100) : 100;
+      setStatus(`时间到。最终得分 ${score}，正确率 ${accuracy}% ，最高连击 ${streak}。`, 'good');
+      targetKeyEl.textContent = '完成';
+      targetHintEl.textContent = '点击“开始游戏”再来一局';
+      clearKeyStates();
+    }
+
+    function resetGame() {
+      started = false;
+      clearInterval(timer);
+      score = 0;
+      correct = 0;
+      wrong = 0;
+      streak = 0;
+      timeLeft = Number(timeSelect.value);
+      currentTarget = null;
+      updateStats();
+      targetKeyEl.textContent = 'A';
+      targetHintEl.textContent = '点击“开始游戏”';
+      setStatus('游戏开始后，跟着高亮键按下对应按键。按对加分，按错扣连击。');
+      clearKeyStates();
+    }
+
+    function flashPressed(code, state) {
+      const el = document.querySelector(`.key[data-key="${code}"]`);
+      if (!el) return;
+      el.classList.add('pressed');
+      if (state) el.classList.add(state);
+      setTimeout(() => {
+        el.classList.remove('pressed');
+        if (state && code !== currentTarget) el.classList.remove(state);
+      }, 140);
+    }
+
+    document.addEventListener('keydown', (event) => {
+      const pressedCode = event.code;
+      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(pressedCode)) {
+        event.preventDefault();
+      }
+
+      flashPressed(pressedCode);
+
+      if (!started || !currentTarget) return;
+
+      if (pressedCode === currentTarget) {
+        correct += 1;
+        streak += 1;
+        score += 10 + Math.min(streak, 10);
+        const targetEl = document.querySelector(`.key[data-key="${currentTarget}"]`);
+        if (targetEl) {
+          targetEl.classList.remove('active');
+          targetEl.classList.add('correct');
+        }
+        setStatus(`正确，继续按 ${labelForKey(currentTarget)} 的下一个目标。`, 'good');
+        updateStats();
+        setTimeout(pickNextKey, 120);
+      } else {
+        wrong += 1;
+        streak = 0;
+        score = Math.max(0, score - 5);
+        const wrongEl = document.querySelector(`.key[data-key="${pressedCode}"]`);
+        if (wrongEl) wrongEl.classList.add('wrong');
+        setStatus(`按错了。目标是 ${labelForKey(currentTarget)}，你按的是 ${labelForKey(pressedCode)}。`, 'bad');
+        updateStats();
+        setTimeout(() => {
+          document.querySelectorAll('.key.wrong').forEach(el => el.classList.remove('wrong'));
+          const targetEl = document.querySelector(`.key[data-key="${currentTarget}"]`);
+          if (targetEl) targetEl.classList.add('active');
+        }, 150);
+      }
+    });
+
+    startBtn.addEventListener('click', startGame);
+    resetBtn.addEventListener('click', resetGame);
+    modeSelect.addEventListener('change', resetGame);
+    timeSelect.addEventListener('change', resetGame);
+    window.addEventListener('resize', fitKeyboard);
+
+    renderKeyboard();
+    resetGame();
+  </script>
+</body>
+</html>
