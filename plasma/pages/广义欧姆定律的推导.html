@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
 <head>
-<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'><style type='text/css'>html {overflow-x: initial !important;}</style>
-<style type='text/css'  id="style-base">:root { --bg-color: #ffffff; --text-color: #333333; --select-text-bg-color: #B5D6FC; --select-text-font-color: auto; --monospace: "Lucida Console",Consolas,"Courier",monospace; --title-bar-height: 20px; }
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'><script src='../../assets/theme-toggle.js' defer></script><style type='text/css'>html {overflow-x: initial !important; color-scheme: dark; background: #0f0f0f;} html[data-theme="light"] { color-scheme: light; background: #f6f8fb; }</style>
+<style type='text/css'  id="style-base">:root { --bg-color: #0f172a; --text-color: #e6edf3; --select-text-bg-color: #1d4f91; --select-text-font-color: #ffffff; --monospace: "Lucida Console",Consolas,"Courier",monospace; --title-bar-height: 20px; }
 .mac-os-11 { --title-bar-height: 28px; }
 html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, "Segoe UI Emoji", "SF Pro", sans-serif; -webkit-font-smoothing: antialiased; }
 h1, h2, h3, h4, h5 { white-space: pre-wrap; }
@@ -227,6 +227,26 @@ mjx-container { break-inside: avoid; }
     --control-text-color: #777;
 }
 
+html[data-theme="dark"] {
+    --bg-color: #0f172a;
+    --text-color: #e6edf3;
+    --select-text-bg-color: #1d4f91;
+    --select-text-font-color: #ffffff;
+    --side-bar-bg-color: #111827;
+    --control-text-color: #94a3b8;
+    --item-hover-bg-color: rgba(87, 184, 255, 0.12);
+}
+
+html[data-theme="light"] {
+    --bg-color: #f6f8fb;
+    --text-color: #18222d;
+    --select-text-bg-color: #B5D6FC;
+    --select-text-font-color: auto;
+    --side-bar-bg-color: #fafafa;
+    --control-text-color: #777;
+    --item-hover-bg-color: #E6F0FE;
+}
+
 @include-when-export url(https://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext);
 
 /* open-sans-regular - latin-ext_latin */
@@ -242,6 +262,87 @@ body {
     font-family: "Open Sans","Clear Sans", "Helvetica Neue", Helvetica, Arial, 'Segoe UI Emoji', 'SF Pro', sans-serif;
     color: rgb(51, 51, 51);
     line-height: 1.6;
+}
+
+html[data-theme="dark"] body {
+    color: #e6edf3;
+}
+
+html[data-theme="dark"] #write {
+    background: transparent;
+}
+
+html[data-theme="dark"] .typora-export-content {
+    background: transparent;
+}
+
+html[data-theme="dark"] a {
+    color: #57b8ff;
+}
+
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h4,
+html[data-theme="dark"] h5,
+html[data-theme="dark"] h6,
+html[data-theme="dark"] p,
+html[data-theme="dark"] li,
+html[data-theme="dark"] span,
+html[data-theme="dark"] strong,
+html[data-theme="dark"] td,
+html[data-theme="dark"] th {
+    color: inherit;
+}
+
+html[data-theme="dark"] code,
+html[data-theme="dark"] pre,
+html[data-theme="dark"] .md-fences {
+    background: #111827;
+    color: #e6edf3;
+}
+
+html[data-theme="dark"] table th,
+html[data-theme="dark"] table td {
+    border-color: #334155;
+}
+
+html[data-theme="dark"] mark {
+    background: #8a6d1f;
+    color: #ffffff;
+}
+
+html[data-theme="dark"] blockquote {
+    border-left: 4px solid #334155;
+    padding-left: 1rem;
+    color: #cbd5e1;
+}
+
+.theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10000;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(17, 24, 39, 0.9);
+    color: #ffffff;
+    border-radius: 999px;
+    padding: 0.62rem 0.95rem;
+    font: 14px/1.2 sans-serif;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    transition: all 0.2s ease;
+}
+
+html[data-theme="light"] .theme-toggle {
+    border-color: #d8e1ea;
+    background: #ffffff;
+    color: #18222d;
+}
+
+html[data-theme="dark"] .theme-toggle:hover,
+html[data-theme="light"] .theme-toggle:hover {
+    transform: translateY(-1px);
 }
 
 #write {

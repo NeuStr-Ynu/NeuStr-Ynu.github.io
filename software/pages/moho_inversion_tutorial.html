@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>基于球面棱柱体的莫霍面反演程序使用教程 - NeuStr</title>
+  <meta name="description" content="基于 Uieda 2017 莫霍面反演思想和新版球面棱柱体正演实现的程序使用教程，包含安装、流程、示例和参考文献。">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="../../assets/theme-toggle.js" defer></script>
+
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --text: #ffffff;
+      --text-light: #ffffff;
+      --accent: #00d4ff;
+      --accent-dim: #0099bb;
+      --card: #161616;
+      --border: #333;
+    }
+
+    html {
+      color-scheme: dark;
+    }
+
+    html[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --text: #18222d;
+      --text-light: #5d6c7a;
+      --accent: #007ea7;
+      --accent-dim: #0a6b8a;
+      --card: #ffffff;
+      --border: #d8e1ea;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.7;
+      padding: 32px 16px;
+      max-width: 960px;
+      margin: 0 auto;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    .back-link:hover {
+      color: var(--accent-dim);
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      letter-spacing: -0.8px;
+      color: var(--text);
+    }
+
+    .tagline {
+      font-size: 1.35rem;
+      color: var(--text);
+      margin-bottom: 2rem;
+    }
+
+    .hero-btn {
+      display: inline-block;
+      background: var(--accent-dim);
+      color: #ffffff;
+      padding: 0.9rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      margin: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .hero-btn:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .hero-btn.secondary {
+      background: transparent;
+      border: 1px solid var(--accent-dim);
+      color: var(--accent);
+    }
+
+    section {
+      margin-bottom: 5rem;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+      font-weight: 500;
+      border-left: 4px solid var(--accent-dim);
+      padding-left: 12px;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      margin: 1.4rem 0 0.8rem;
+      color: var(--text);
+    }
+
+    p {
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.6rem;
+      transition: all 0.18s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--accent-dim);
+      transform: translateY(-4px);
+    }
+
+    .feature-card h3 {
+      margin-top: 0;
+      margin-bottom: 0.7rem;
+      color: var(--text);
+    }
+
+    .feature-card p {
+      margin-bottom: 0;
+    }
+
+    .info-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      margin: 1.4rem 0;
+    }
+
+    .info-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .equation {
+      font-family: 'JetBrains Mono', monospace;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      color: #e0ffe0;
+      overflow-x: auto;
+      margin: 1rem 0 0;
+    }
+
+    .toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.4rem;
+    }
+
+    .toc ul,
+    .section-list,
+    .refs {
+      margin-left: 1.4rem;
+      list-style-type: disc;
+      color: var(--text);
+    }
+
+    .toc li,
+    .section-list li,
+    .refs li {
+      margin-bottom: 0.65rem;
+    }
+
+    .toc a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      text-decoration: underline;
+    }
+
+    pre {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem;
+      color: #e0ffe0;
+      margin-top: 1rem;
+    }
+
+    code {
+      background: #111;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    html[data-theme="light"] pre,
+    html[data-theme="light"] code,
+    html[data-theme="light"] .equation {
+      background: #edf2f7;
+      color: #213547;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 6rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 1000;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.62rem 0.95rem;
+      font: inherit;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent-dim);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.4rem;
+      }
+
+      .features {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="../index.html" class="back-link">← 返回首页</a>
+    <h1>莫霍面反演程序教程</h1>
+    <div class="tagline">基于 Uieda 2017 方法与新版球面棱柱体正演的快速反演实现</div>
+
+    <div>
+      <a href="#example" class="hero-btn">查看最小示例</a>
+      <a href="#references" class="hero-btn secondary">参考文献</a>
+    </div>
+  </header>
+
+  <main>
+
+    <section>
+      <h2>页面导航</h2>
+      <div class="toc">
+        <ul>
+          <li><a href="#overview">程序概览</a></li>
+          <li><a href="#install">依赖与安装</a></li>
+          <li><a href="#workflow">使用流程</a></li>
+          <li><a href="#example">最小使用示例</a></li>
+          <li><a href="#classes">核心类说明</a></li>
+          <li><a href="#tips">使用建议</a></li>
+          <li><a href="#references">参考文献</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="overview">
+      <h2>程序概览</h2>
+      <p>
+        这个程序的核心思想来自 Uieda 与 Barbosa 在 2017 年提出的球坐标系下快速非线性重力反演方法，
+        但正演部分已经替换为新版球面棱柱体实现。这样做保留了原始方法清晰的反演框架，同时让整体计算速度有了明显提升。
+      </p>
+      <div class="equation">φ(x) = ‖g(x) - g_obs‖² + μ²‖L(x - x₀)‖²</div>
+
+      <div class="features" style="margin-top: 1.8rem;">
+        <div class="feature-card">
+          <h3>方法来源</h3>
+          <p>Gauss-Newton 迭代、Bott Jacobian 和 Armijo 线搜索的组合框架。</p>
+        </div>
+        <div class="feature-card">
+          <h3>主要改进</h3>
+          <p>使用新版球面棱柱体正演后，模型计算效率比旧实现更高，适合更大区域或更高分辨率试验。</p>
+        </div>
+        <div class="feature-card">
+          <h3>程序结构</h3>
+          <p><code>MohoLayer</code> 负责建模和正演，<code>MohoInversion</code> 负责反演和结果评估。</p>
+        </div>
+        <div class="feature-card">
+          <h3>适用任务</h3>
+          <p>适合月球或其他行星体壳幔边界反演，也适合做人工模型测试和独立测试点评估。</p>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <p>
+          这套实现并不是重新发明一套反演方法，而是在继承经典文献思路的基础上，
+          把最耗时的正演部分换成更高效的球面棱柱体正演，因此优势主要体现在运行效率和实际可用性上。
+        </p>
+      </div>
+    </section>
+
+    <section id="install">
+      <h2>依赖与安装</h2>
+      <p>程序主要依赖以下 Python 库：</p>
+      <pre><code>numpy
+scipy
+harmonica
+boule
+xarray
+matplotlib</code></pre>
+
+      <p>可以直接使用下面的命令安装：</p>
+      <pre><code>pip install numpy scipy harmonica boule xarray matplotlib</code></pre>
+
+      <div class="info-box">
+        <p>
+          当前代码默认使用 <code>bl.Moon2015.radius</code> 作为平均半径，所以更偏向月球场景。
+          如果后续要迁移到地球或其他天体，建议优先检查参考半径、参考面定义和密度差的地球物理意义。
+        </p>
+      </div>
+    </section>
+
+    <section id="workflow">
+      <h2>使用流程</h2>
+      <ul class="section-list">
+        <li>准备规则网格的 <code>lon</code>、<code>lat</code>，以及与之对应的二维场数据。</li>
+        <li>设置观测高度 <code>height</code>、参考莫霍面 <code>reference</code>、初始起伏 <code>surface</code> 和密度差 <code>density_contrast</code>。</li>
+        <li>创建 <code>MohoLayer</code> 对象，先做一次正演检查量级和符号。</li>
+        <li>把观测重力场 <code>go</code> 传入 <code>MohoInversion</code>，设置 <code>mu</code> 和 <code>max_iter</code> 后执行反演。</li>
+        <li>通过残差、收敛曲线和测试点结果评估反演质量。</li>
+      </ul>
+
+      <div class="features" style="margin-top: 1.8rem;">
+        <div class="feature-card">
+          <h3>正则化</h3>
+          <p><code>mu</code> 越大，模型越平滑；<code>mu = 0</code> 时表示不加正则化。</p>
+        </div>
+        <div class="feature-card">
+          <h3>安全约束</h3>
+          <p>程序内部做了逐点裁剪，确保莫霍面不会越过观测面，这对非均匀参考面特别重要。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="example">
+      <h2>最小使用示例</h2>
+      <p>下面这段代码展示了从建模到反演的最小工作流程，你只需要替换成自己的观测数据即可。</p>
+      <pre><code>import numpy as np
+
+lon = np.linspace(0, 60, 121)
+lat = np.linspace(-30, 30, 121)
+
+reference = np.full((lat.size, lon.size), -40000.0)
+surface = np.zeros((lat.size, lon.size))
+density_contrast = np.full((lat.size, lon.size), 450.0)
+
+height = 10000.0
+go = np.zeros((lat.size, lon.size))
+
+layer = MohoLayer(
+    lon=lon,
+    lat=lat,
+    height=height,
+    reference=reference,
+    surface=surface,
+    density_contrast=density_contrast,
+)
+
+gz0 = layer.forward(quite=True)
+
+inv = MohoInversion(
+    layer=layer,
+    go=go,
+    max_iter=12,
+    mu=0.2,
+    quite=True,
+)
+
+moho_surface = inv.inversion_gn(gtol=1e-4)
+residual = inv.residual_2d()
+stats = inv.residual_stats()
+
+print("最终残差统计:", stats)</code></pre>
+
+      <h3>xarray 输出</h3>
+      <p>程序内置了 <code>xarray</code> 导出接口，方便后续保存和画图：</p>
+      <pre><code>surface_da = inv.surface_to_xarray()
+field_da = inv.field_to_xarray()
+residual_da = inv.residual_2d_to_xarray()
+conv_da = inv.convergence_to_xarray()</code></pre>
+
+      <h3>测试点评估</h3>
+      <p>如果你有独立测试集，可以直接调用测试点预测接口：</p>
+      <pre><code>go_pred, residual_test, scores = inv.evaluate_testset(
+    lon_pts=test_lon,
+    lat_pts=test_lat,
+    go_test=test_go,
+)</code></pre>
+    </section>
+
+    <section id="classes">
+      <h2>核心类说明</h2>
+      <div class="features">
+        <div class="feature-card">
+          <h3>MohoLayer</h3>
+          <p>负责把经纬度网格、参考面和起伏组合成球面棱柱体层，并在规则网格或散点位置计算重力正演值。</p>
+        </div>
+        <div class="feature-card">
+          <h3>MohoInversion</h3>
+          <p>负责一阶差分正则化、Bott 型 Jacobian、高斯-牛顿反演、残差统计和测试集评估。</p>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <p><code>MohoLayer.forward()</code> 用于规则网格正演，<code>forward_testset()</code> 用于任意散点预测。</p>
+        <p><code>MohoInversion.inversion_gn()</code> 是主入口，<code>plot_convergence()</code> 和 <code>plot_residual_histogram()</code> 用于结果诊断。</p>
+      </div>
+
+      <div class="info-box">
+        <p>
+          这版代码里还修复了几个比较关键的稳定性问题，比如 Jacobian 中密度差取绝对值、
+          非均匀参考面下的逐点安全裁剪，以及最终残差计算流程。这些细节会直接影响反演的收敛行为。
+        </p>
+      </div>
+    </section>
+
+    <section id="tips">
+      <h2>使用建议</h2>
+      <ul class="section-list">
+        <li>先用人工模型做一轮正演-反演闭环测试，确认符号、单位和密度差方向没有问题。</li>
+        <li>如果结果震荡明显或者高频起伏过强，优先增大 <code>mu</code>，再考虑修改初始模型。</li>
+        <li>如果网格很大，建议先做低分辨率试算，再逐步提高分辨率。</li>
+        <li>对不同天体应用时，要同步检查平均半径、参考面定义和密度差含义。</li>
+        <li>不要只看 RMS 是否下降，最好结合空间残差分布和独立测试点评分一起判断。</li>
+      </ul>
+    </section>
+
+    <section id="references">
+      <h2>参考文献</h2>
+      <ul class="refs">
+        <li>Uieda, L., &amp; Barbosa, V. C. F. (2017). Fast nonlinear gravity inversion in spherical coordinates with application to the South American Moho. <em>Geophysical Journal International</em>, 208(1), 162-176.</li>
+        <li>Uieda, L., Barbosa, V. C. F., &amp; Braitenberg, C. (2016). Tesseroids: Forward-modeling gravitational fields in spherical coordinates. <em>Geophysics</em>, 81(5), F41-F48.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 NeuStr · Powered by AIwritten HTML & Python</p>
+  </footer>
+
+</body>
+</html>
